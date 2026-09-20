@@ -6,7 +6,7 @@ import {IRiskRegistry, RiskScore} from "../interfaces/IRiskRegistry.sol";
 
 contract RiskRegistry is IRiskRegistry {
     AccessControlManager public accessControl;
-    
+
     mapping(bytes32 => RiskScore) public scores;
 
     event ScoreUpdated(bytes32 indexed targetHash, uint8 technicalRisk, uint8 socialRisk, uint8 shariahFlag);

@@ -20,8 +20,8 @@ interface ITreasury {
 contract VotingModule is IVotingModule, ReentrancyGuard {
     struct VoteTally {
         bytes32 targetHash;
-        uint256 votesFor;       // stake-weighted sum for "valid"
-        uint256 votesAgainst;   // stake-weighted sum for "invalid"
+        uint256 votesFor; // stake-weighted sum for "valid"
+        uint256 votesAgainst; // stake-weighted sum for "invalid"
         uint256 startTime;
         bool resolved;
     }
@@ -46,8 +46,8 @@ contract VotingModule is IVotingModule, ReentrancyGuard {
     mapping(bytes32 => mapping(address => ValidatorVote)) public votes;
     mapping(bytes32 => address[]) public voterList;
 
-    uint256 public quorumBps = 500;       // 5% of total staked weight must participate
-    uint256 public totalStakedWeight;      // maintained on stake/unstake via events — set by admin for MVP
+    uint256 public quorumBps = 500; // 5% of total staked weight must participate
+    uint256 public totalStakedWeight; // maintained on stake/unstake via events — set by admin for MVP
     uint256 public voteRewardAmount;
     uint256 public voteSlashAmount;
 
@@ -80,10 +80,8 @@ contract VotingModule is IVotingModule, ReentrancyGuard {
         uint256 _voteSlashAmount
     ) {
         if (
-            _accessControl == address(0) ||
-            _validatorRegistry == address(0) ||
-            _riskRegistry == address(0) ||
-            _treasury == address(0)
+            _accessControl == address(0) || _validatorRegistry == address(0) || _riskRegistry == address(0)
+                || _treasury == address(0)
         ) revert ZeroAddress();
 
         accessControl = AccessControlManager(_accessControl);
@@ -140,11 +138,7 @@ contract VotingModule is IVotingModule, ReentrancyGuard {
         // Initialize tally lazily on first vote
         if (tallies[targetHash].startTime == 0) {
             tallies[targetHash] = VoteTally({
-                targetHash: targetHash,
-                votesFor: 0,
-                votesAgainst: 0,
-                startTime: c.openedAt,
-                resolved: false
+                targetHash: targetHash, votesFor: 0, votesAgainst: 0, startTime: c.openedAt, resolved: false
             });
         }
 
@@ -154,11 +148,7 @@ contract VotingModule is IVotingModule, ReentrancyGuard {
             tallies[targetHash].votesAgainst += weight;
         }
 
-        votes[targetHash][voter] = ValidatorVote({
-            validator: voter,
-            supportsValid: supportsValid,
-            weight: weight
-        });
+        votes[targetHash][voter] = ValidatorVote({validator: voter, supportsValid: supportsValid, weight: weight});
         voterList[targetHash].push(voter);
 
         // Lock validator's stake against unstake until this vote is resolved

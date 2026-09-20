@@ -71,7 +71,10 @@ contract CaseManager is ICaseManager {
     /// @notice Opens a new case on-chain and simultaneously casts the opener's first vote.
     /// @dev    Race condition guard: require status == None prevents two validators from
     ///         opening the same case simultaneously — second tx will revert cleanly.
-    function openCaseAndVote(bytes32 targetHash, string calldata evidenceURI, bool supportsValid) external whenNotPaused {
+    function openCaseAndVote(bytes32 targetHash, string calldata evidenceURI, bool supportsValid)
+        external
+        whenNotPaused
+    {
         if (!validatorRegistry.isActive(msg.sender)) revert NotActiveValidator();
         if (cases[targetHash].status != CaseStatus.None) revert CaseAlreadyExists();
 

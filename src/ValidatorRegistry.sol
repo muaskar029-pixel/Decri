@@ -39,12 +39,7 @@ contract ValidatorRegistry is IValidatorRegistry, ReentrancyGuard {
     error HasActiveVotes();
     error InsufficientStake();
 
-    constructor(
-        address _stakingToken,
-        address _accessControl,
-        address _treasury,
-        uint256 _minValidatorStake
-    ) {
+    constructor(address _stakingToken, address _accessControl, address _treasury, uint256 _minValidatorStake) {
         if (_stakingToken == address(0) || _accessControl == address(0) || _treasury == address(0)) {
             revert ZeroAddress();
         }

@@ -26,9 +26,9 @@ contract IntegrationTest is Test {
     address charlie = address(4); // third validator
     address oracle = address(5);
 
-    uint256 minStake = 100 * 10**18;
-    uint256 rewardAmount = 5 * 10**17;  // 0.5 USDC
-    uint256 slashAmount = 1 * 10**18;   // 1 USDC
+    uint256 minStake = 100 * 10 ** 18;
+    uint256 rewardAmount = 5 * 10 ** 17; // 0.5 USDC
+    uint256 slashAmount = 1 * 10 ** 18; // 1 USDC
 
     function setUp() public {
         vm.startPrank(admin);
@@ -37,9 +37,7 @@ contract IntegrationTest is Test {
         accessControl = new AccessControlManager(admin);
         treasury = new Treasury(address(usdc), address(accessControl));
 
-        validatorRegistry = new ValidatorRegistry(
-            address(usdc), address(accessControl), address(treasury), minStake
-        );
+        validatorRegistry = new ValidatorRegistry(address(usdc), address(accessControl), address(treasury), minStake);
 
         riskRegistry = new RiskRegistry(address(accessControl));
 
@@ -64,16 +62,16 @@ contract IntegrationTest is Test {
         accessControl.grantRole(accessControl.ORACLE_ROLE(), oracle);
 
         // Fund treasury with 1000 USDC
-        usdc.mint(admin, 1000 * 10**18);
-        usdc.approve(address(treasury), 1000 * 10**18);
-        treasury.fundPool(1000 * 10**18);
+        usdc.mint(admin, 1000 * 10 ** 18);
+        usdc.approve(address(treasury), 1000 * 10 ** 18);
+        treasury.fundPool(1000 * 10 ** 18);
 
         vm.stopPrank();
 
         // Mint tokens for validators
-        usdc.mint(alice, 500 * 10**18);
-        usdc.mint(bob, 500 * 10**18);
-        usdc.mint(charlie, 500 * 10**18);
+        usdc.mint(alice, 500 * 10 ** 18);
+        usdc.mint(bob, 500 * 10 ** 18);
+        usdc.mint(charlie, 500 * 10 ** 18);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -96,7 +94,7 @@ contract IntegrationTest is Test {
         // Total staked = 100 + 200 = 300. quorumBps=500 (5%). Minimum = 15 weight.
         // Both alice (100) + bob (200) will vote → 300 total → quorum met easily.
         vm.prank(admin);
-        votingModule.setTotalStakedWeight(300 * 10**18);
+        votingModule.setTotalStakedWeight(300 * 10 ** 18);
 
         bytes32 targetHash = keccak256("https://suspicious.site");
         string memory evidenceURI = "ipfs://Qm...";
@@ -125,7 +123,7 @@ contract IntegrationTest is Test {
 
         // Bob (weight 200) > Alice (weight 100) → INVALID
         Case memory c = caseManager.getCase(targetHash);
-        assertEq(uint(c.status), uint(CaseStatus.Invalid), "Status should be Invalid");
+        assertEq(uint256(c.status), uint256(CaseStatus.Invalid), "Status should be Invalid");
 
         // Alice was wrong → slashed 1 USDC from stake
         assertEq(
@@ -138,11 +136,7 @@ contract IntegrationTest is Test {
         uint256 bobBalanceBefore = usdc.balanceOf(bob);
         vm.prank(bob);
         treasury.claim();
-        assertEq(
-            usdc.balanceOf(bob),
-            bobBalanceBefore + rewardAmount,
-            "Bob should receive rewardAmount"
-        );
+        assertEq(usdc.balanceOf(bob), bobBalanceBefore + rewardAmount, "Bob should receive rewardAmount");
 
         // Alice's activeVoteCount should be back to 0 — she can now unstake
         // (though her balance is reduced from slash)
@@ -164,7 +158,7 @@ contract IntegrationTest is Test {
         vm.stopPrank();
 
         vm.prank(admin);
-        votingModule.setTotalStakedWeight(300 * 10**18);
+        votingModule.setTotalStakedWeight(300 * 10 ** 18);
 
         bytes32 targetHash = keccak256("https://another-suspicious.site");
 
@@ -179,7 +173,7 @@ contract IntegrationTest is Test {
 
         // Alice (200) > Bob (100) → VALID
         Case memory c = caseManager.getCase(targetHash);
-        assertEq(uint(c.status), uint(CaseStatus.Valid), "Status should be Valid");
+        assertEq(uint256(c.status), uint256(CaseStatus.Valid), "Status should be Valid");
 
         // Bob was wrong → slashed
         assertEq(validatorRegistry.stakedBalanceOf(bob), minStake - slashAmount);
@@ -262,7 +256,7 @@ contract IntegrationTest is Test {
 
         // Set total staked weight to 10000 USDC but only 100 USDC voted → 1% < 5% quorum
         vm.prank(admin);
-        votingModule.setTotalStakedWeight(10000 * 10**18);
+        votingModule.setTotalStakedWeight(10000 * 10 ** 18);
 
         bytes32 targetHash = keccak256("quorum-fail-test");
         vm.prank(alice);
@@ -348,7 +342,7 @@ contract IntegrationTest is Test {
         vm.stopPrank();
 
         vm.prank(admin);
-        votingModule.setTotalStakedWeight(300 * 10**18);
+        votingModule.setTotalStakedWeight(300 * 10 ** 18);
 
         uint256 treasuryBalanceBefore = usdc.balanceOf(address(treasury));
 
